@@ -1,13 +1,24 @@
-from PIL import Image
 import torch
 import torch.nn.functional as F
+from torchvision import transforms
+from PIL import Image
+
+from config import IMAGE_SIZE, DEVICE, CLASS_NAMES
 
 
-def predict_image(model, image_path, transform, device, class_names):
+transform = transforms.Compose([
+    transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
+    transforms.ToTensor(),
+])
+
+
+def predict_image(model, image_path):
 
     image = Image.open(image_path).convert("RGB")
 
-    image = transform(image).unsqueeze(0).to(device)
+    image = transform(image)
+
+    image = image.unsqueeze(0).to(DEVICE)
 
     model.eval()
 
@@ -17,8 +28,10 @@ def predict_image(model, image_path, transform, device, class_names):
 
         probabilities = F.softmax(output, dim=1)
 
-        prediction = torch.argmax(probabilities, dim=1).item()
+        confidence, prediction = torch.max(probabilities, 1)
 
-    confidence = probabilities[0][prediction].item() * 100
+    prediction = CLASS_NAMES[prediction.item()]
 
-    return class_names[prediction], confidence
+    confidence = confidence.item() * 100
+
+    return prediction, confidence
