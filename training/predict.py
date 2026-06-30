@@ -1,11 +1,12 @@
 import torch
 import torch.nn.functional as F
 from torchvision import transforms
-from PIL import Image
 
 from config import IMAGE_SIZE, DEVICE, CLASS_NAMES
+from utils import load_image
 
 
+# Image preprocessing
 transform = transforms.Compose([
     transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
     transforms.ToTensor(),
@@ -13,8 +14,16 @@ transform = transforms.Compose([
 
 
 def predict_image(model, image_path):
+    """
+    Predict MRI image class.
 
-    image = Image.open(image_path).convert("RGB")
+    Returns:
+        prediction (str)
+        confidence (float)
+        probabilities (dict)
+    """
+
+    image = load_image(image_path)
 
     image = transform(image)
 
@@ -26,12 +35,20 @@ def predict_image(model, image_path):
 
         output = model(image)
 
-        probabilities = F.softmax(output, dim=1)
+        probs = F.softmax(output, dim=1)[0]
 
-        confidence, prediction = torch.max(probabilities, 1)
+    confidence, prediction = torch.max(probs, 0)
 
-    prediction = CLASS_NAMES[prediction.item()]
+    prediction_name = CLASS_NAMES[prediction.item()]
 
-    confidence = confidence.item() * 100
+    probability_dict = {}
 
-    return prediction, confidence
+    for i, class_name in enumerate(CLASS_NAMES):
+
+        probability_dict[class_name] = probs[i].item() * 100
+
+    return (
+        prediction_name,
+        confidence.item() * 100,
+        probability_dict
+    )
