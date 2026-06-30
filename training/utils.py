@@ -1,4 +1,5 @@
 import torch
+from PIL import Image
 
 
 def save_model(model, path):
@@ -21,6 +22,23 @@ def load_model_weights(model, path, device):
     print(f"\n✅ Model loaded from: {path}")
 
     return model
+
+
+def load_image(image_path):
+
+    try:
+
+        image = Image.open(image_path).convert("RGB")
+
+        print("✅ Image Loaded Successfully")
+
+        return image
+
+    except Exception as e:
+
+        print(f"❌ Error: {e}")
+
+        return None
 
 
 def print_line():
