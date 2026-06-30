@@ -32,6 +32,8 @@ def main():
     print("✅ Model Loaded Successfully!\n")
 
     menu()
+    choice = input("\nEnter your choice: ")
+    print(f"You selected: {choice}")
 
 if __name__ == "__main__":
     main()
