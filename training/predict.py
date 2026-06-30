@@ -2,34 +2,23 @@ from PIL import Image
 import torch
 import torch.nn.functional as F
 
-def predict_image(
-    model,
-    image_path,
-    transform,
-    device,
-    class_names
-):
+
+def predict_image(model, image_path, transform, device, class_names):
 
     image = Image.open(image_path).convert("RGB")
 
-    img = transform(image).unsqueeze(0).to(device)
+    image = transform(image).unsqueeze(0).to(device)
 
     model.eval()
 
     with torch.no_grad():
 
-        outputs = model(img)
+        output = model(image)
 
-        probabilities = F.softmax(outputs, dim=1)
+        probabilities = F.softmax(output, dim=1)
 
-        prediction = torch.argmax(
-            probabilities,
-            dim=1
-        ).item()
+        prediction = torch.argmax(probabilities, dim=1).item()
 
-    confidence = probabilities[0][prediction].item()*100
+    confidence = probabilities[0][prediction].item() * 100
 
-    return (
-        class_names[prediction],
-        confidence
-    )
+    return class_names[prediction], confidence
