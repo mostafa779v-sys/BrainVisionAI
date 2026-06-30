@@ -1,13 +1,31 @@
 # BrainVisionAI
 
-AI-powered brain MRI analysis platform.
+BrainVisionAI is a deep learning project for automatic brain MRI tumor classification.
 
-Current Goal:
-- Brain tumor classification from MRI images.
+## Features
 
-Planned Features:
-- Tumor detection
-- Tumor classification
-- Explainable AI
-- Medical report generation
-- Web platform
+- Brain MRI Classification
+- EfficientNet-B0
+- PyTorch
+- Google Colab Support
+- 95%+ Test Accuracy
+- GitHub Version Control
+
+## Dataset
+
+Brain Tumor MRI Dataset (4 Classes)
+
+- Glioma
+- Meningioma
+- No Tumor
+- Pituitary
+
+## Project Status
+
+✅ Training Complete
+
+✅ Evaluation Complete
+
+🚧 Grad-CAM (Coming Soon)
+
+🚧 Web Application (Coming Soon)
