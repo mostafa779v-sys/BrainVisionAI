@@ -1,5 +1,6 @@
 from config import *
 from model import create_model
+from utils import print_success, print_error, load_image
 
 
 def print_header():
@@ -15,40 +16,53 @@ def show_system_info():
     print()
 
 
-def load_model():
+def load_ai_model():
     print("Loading Model...")
 
     model = create_model().to(DEVICE)
 
-    print("✅ Model Loaded Successfully!\n")
+    print_success("Model Loaded Successfully!")
 
     return model
 
 
 def show_menu():
-    print("Choose an option:")
+    print("\nChoose an option:")
     print("1 - Train Model")
     print("2 - Evaluate Model")
     print("3 - Predict MRI")
     print("4 - Exit")
 
 
-def handle_choice(choice):
+def handle_choice(model):
+
+    choice = input("\nEnter your choice: ")
 
     if choice == "1":
+
         print("\n🚧 Training module is under development.")
 
     elif choice == "2":
+
         print("\n🚧 Evaluation module is under development.")
 
     elif choice == "3":
-        print("\n🚧 Prediction module is under development.")
+
+        image_path = input("\nEnter MRI image path: ")
+
+        image = load_image(image_path)
+
+        if image is not None:
+
+            print_success("Prediction module will be connected next.")
 
     elif choice == "4":
+
         print("\nGoodbye!")
 
     else:
-        print("\n❌ Invalid choice.")
+
+        print_error("Invalid choice.")
 
 
 def main():
@@ -57,13 +71,11 @@ def main():
 
     show_system_info()
 
-    model = load_model()
+    model = load_ai_model()
 
     show_menu()
 
-    choice = input("\nEnter your choice: ")
-
-    handle_choice(choice)
+    handle_choice(model)
 
 
 if __name__ == "__main__":
