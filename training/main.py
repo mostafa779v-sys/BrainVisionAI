@@ -1,32 +1,30 @@
+# ==========================================
+# BrainVisionAI v0.2
+# Main Program
+# ==========================================
+
+from config import DEVICE, IMAGE_SIZE, CLASS_NAMES, MODEL_PATH
+from model import create_model
+from utils import load_model_weights, print_success, print_error
+from predict import predict_image
+
 import os
 
-from config import *
-from model import create_model
-from predict import predict_image
-from utils import (
-    load_model_weights,
-    print_success,
-    print_error,
-    print_line,
-)
 
+def header():
 
-def print_header():
-
-    print_line()
+    print("=" * 50)
     print("🧠 BrainVisionAI v0.2")
-    print_line()
+    print("=" * 50)
 
     print(f"Device      : {DEVICE}")
     print(f"Image Size  : {IMAGE_SIZE}")
-    print(f"Classes     : {CLASS_NAMES}")
-
-    print_line()
+    print(f"Classes     : {len(CLASS_NAMES)}")
 
 
-def load_ai():
+def load_model():
 
-    print("\nLoading AI Model...\n")
+    print("\nLoading trained model...\n")
 
     model = create_model()
 
@@ -43,78 +41,64 @@ def load_ai():
 
 def predict_menu(model):
 
-    image_path = input("\nEnter MRI image path:\n\n")
+    image_path = input("\nEnter MRI image path:\n")
 
     if not os.path.exists(image_path):
 
-        print_error("Image not found.")
-        return
+        print_error("Image not found!")
 
-    print("\nAnalyzing MRI...\n")
+        return
 
     prediction, confidence, probabilities = predict_image(
         model,
         image_path
     )
 
-    print_line()
+    print("\n" + "=" * 50)
 
     print(f"Prediction : {prediction}")
 
     print(f"Confidence : {confidence:.2f}%")
 
-    print_line()
-
-    print("\nAll Probabilities:\n")
+    print("\nProbabilities:\n")
 
     for name, value in probabilities.items():
 
-        print(f"{name:12} : {value:.2f}%")
+        print(f"{name:<12}: {value:.2f}%")
 
-    print_line()
+    print("=" * 50)
 
 
 def main():
 
-    print_header()
+    header()
 
-    model = load_ai()
+    model = load_model()
 
     while True:
 
-        print("\nChoose an option:\n")
+        print("\n")
 
         print("1 - Train Model")
-
         print("2 - Evaluate Model")
-
         print("3 - Predict MRI")
-
         print("4 - Exit")
 
-        choice = input("\nEnter your choice: ")
+        choice = input("\nChoice: ")
 
-        if choice == "1":
-
-            print("\nTraining module coming soon.")
-
-        elif choice == "2":
-
-            print("\nEvaluation module coming soon.")
-
-        elif choice == "3":
+        if choice == "3":
 
             predict_menu(model)
 
         elif choice == "4":
 
-            print("\nGoodbye 👋")
+            print("\nGoodbye!")
 
             break
 
         else:
 
-            print_error("Invalid choice.")
+            print("\nModule will be added in next version.")
 
 
 if __name__ == "__main__":
