@@ -33,3 +33,12 @@ MODEL_PATH = "../models/BrainVisionAI_v1.pth"
 BATCH_SIZE = 32
 LEARNING_RATE = 0.001
 EPOCHS = 10
+
+# ==========================
+# Dataset Paths
+# ==========================
+
+DATASET_PATH = "/kaggle/input/brain-tumor-mri-dataset"
+
+TRAIN_PATH = DATASET_PATH + "/Training"
+TEST_PATH = DATASET_PATH + "/Testing"
