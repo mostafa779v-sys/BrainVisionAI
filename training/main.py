@@ -1,5 +1,5 @@
 # ==========================================
-# BrainVisionAI v0.3
+# BrainVisionAI v0.4
 # Main Program
 # ==========================================
 
@@ -8,6 +8,7 @@ from model import create_model
 from dataset import test_loader
 from evaluate import evaluate
 from predict import predict_image
+from gradcam import generate_gradcam
 from utils import (
     load_model_weights,
     print_success,
@@ -20,7 +21,7 @@ import os
 def header():
 
     print("=" * 50)
-    print("🧠 BrainVisionAI v0.3")
+    print("🧠 BrainVisionAI v0.4")
     print("=" * 50)
 
     print(f"Device      : {DEVICE}")
@@ -52,7 +53,6 @@ def predict_menu(model):
     if not os.path.exists(image_path):
 
         print_error("Image not found!")
-
         return
 
     prediction, confidence, probabilities = predict_image(
@@ -71,6 +71,22 @@ def predict_menu(model):
 
     for name, value in probabilities.items():
         print(f"{name:<12}: {value:.2f}%")
+
+    print("\nGenerating Grad-CAM...\n")
+
+    try:
+
+        save_path = generate_gradcam(
+            model,
+            image_path
+        )
+
+        print_success(f"Grad-CAM saved successfully!")
+        print(f"Location : {save_path}")
+
+    except Exception as e:
+
+        print_error(f"Grad-CAM failed:\n{e}")
 
     print("=" * 50)
 
