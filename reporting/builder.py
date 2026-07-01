@@ -1,34 +1,23 @@
 """
 ====================================================
 BrainVisionAI
-Report Builder
+Professional Report Builder
 ====================================================
 """
 
 from .canvas import ReportCanvas
 
 from .header import Header
-
 from .footer import Footer
 
 from .images import MRISection
 
 from .cards import (
-
-    DiagnosisCard,
-
-    ConfidenceCard,
-
-    InfoCard
-
+    DiagnosisCard
 )
 
 from .charts import (
-
-    ProbabilityChart,
-
-    ConfidenceGauge
-
+    ProbabilityChart
 )
 
 from .metadata import MetadataSection
@@ -37,7 +26,7 @@ from .metadata import MetadataSection
 class ReportBuilder:
 
     """
-    Main Report Builder
+    Professional Report Builder
     """
 
     def __init__(
@@ -84,9 +73,9 @@ class ReportBuilder:
 
         self.image_size = image_size
 
-    # ==================================================
+    # =====================================================
 
-    def draw_header(self):
+    def build(self):
 
         Header(
 
@@ -95,10 +84,6 @@ class ReportBuilder:
             self.version
 
         ).draw()
-
-    # ==================================================
-
-    def draw_images(self):
 
         MRISection(
 
@@ -110,10 +95,6 @@ class ReportBuilder:
 
         ).draw()
 
-    # ==================================================
-
-    def draw_cards(self):
-
         DiagnosisCard(
 
             self.canvas,
@@ -124,10 +105,6 @@ class ReportBuilder:
 
         ).draw()
 
-    # ==================================================
-
-    def draw_charts(self):
-
         ProbabilityChart(
 
             self.canvas,
@@ -135,10 +112,6 @@ class ReportBuilder:
             self.probabilities
 
         ).draw()
-
-    # ==================================================
-
-    def draw_metadata(self):
 
         MetadataSection(
 
@@ -154,10 +127,6 @@ class ReportBuilder:
 
         ).draw()
 
-    # ==================================================
-
-    def draw_footer(self):
-
         Footer(
 
             self.canvas,
@@ -166,30 +135,24 @@ class ReportBuilder:
 
         ).draw()
 
-    # ==================================================
+        return self.canvas
 
-    def build(self):
-
-        self.draw_header()
-
-        self.draw_images()
-
-        self.draw_cards()
-
-        self.draw_charts()
-
-        self.draw_metadata()
-
-        self.draw_footer()
-
-    # ==================================================
+    # =====================================================
 
     def save(
 
         self,
 
-        path
+        output_path
 
     ):
 
-        self.canvas.save(path)
+        canvas = self.build()
+
+        canvas.save(
+
+            output_path
+
+        )
+
+        return output_path
