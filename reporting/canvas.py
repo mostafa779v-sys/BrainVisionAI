@@ -1,16 +1,14 @@
 """
-====================================================
+=========================================
 BrainVisionAI
-Professional Canvas Engine
-====================================================
+Canvas
+=========================================
 """
 
 import os
 
-from PIL import (
-    Image,
-    ImageDraw
-)
+from PIL import Image
+from PIL import ImageDraw
 
 from . import theme
 
@@ -26,7 +24,6 @@ class ReportCanvas:
             (
 
                 theme.PAGE_WIDTH,
-
                 theme.PAGE_HEIGHT
 
             ),
@@ -41,7 +38,7 @@ class ReportCanvas:
 
         )
 
-    # =================================================
+    # ======================================
 
     def save(self, path):
 
@@ -59,19 +56,15 @@ class ReportCanvas:
 
         self.image.save(
 
-    path,
+            path,
 
-    format="PNG",
+            quality=100
 
-    optimize=True,
+        )
 
-    compress_level=0
+    # ======================================
 
-)
-
-    # =================================================
-
-    def rectangle(
+    def text(
 
         self,
 
@@ -79,135 +72,33 @@ class ReportCanvas:
 
         y,
 
-        width,
+        text,
 
-        height,
+        font,
 
-        color
+        color=theme.BLACK
 
     ):
 
-        self.draw.rectangle(
+        self.draw.text(
 
             (
 
                 x,
 
-                y,
-
-                x + width,
-
-                y + height
+                y
 
             ),
 
-            fill=color
+            str(text),
+
+            fill=color,
+
+            font=font
 
         )
 
-    # =================================================
-
-    def rounded_box(
-
-        self,
-
-        x,
-
-        y,
-
-        width,
-
-        height,
-
-        fill=theme.CARD,
-
-        outline=theme.BORDER,
-
-        radius=None,
-
-        border_width=2
-
-    ):
-
-        if radius is None:
-
-            radius = theme.CARD_RADIUS
-
-        self.draw.rounded_rectangle(
-
-            (
-
-                x,
-
-                y,
-
-                x + width,
-
-                y + height
-
-            ),
-
-            radius=radius,
-
-            fill=fill,
-
-            outline=outline,
-
-            width=border_width
-
-        )
-
-    # =================================================
-
-    def shadow_box(
-
-        self,
-
-        x,
-
-        y,
-
-        width,
-
-        height,
-
-        shadow=5
-
-    ):
-
-        self.draw.rounded_rectangle(
-
-            (
-
-                x + shadow,
-
-                y + shadow,
-
-                x + width + shadow,
-
-                y + height + shadow
-
-            ),
-
-            radius=theme.CARD_RADIUS,
-
-            fill=(210,210,210)
-
-        )
-
-        self.rounded_box(
-
-            x,
-
-            y,
-
-            width,
-
-            height
-
-        )
-
-    # =================================================
+    # ======================================
 
     def line(
 
@@ -221,7 +112,7 @@ class ReportCanvas:
 
         y2,
 
-        color=theme.BORDER,
+        color=theme.LIGHT_GRAY,
 
         width=2
 
@@ -247,9 +138,9 @@ class ReportCanvas:
 
         )
 
-    # =================================================
+    # ======================================
 
-    def circle(
+    def box(
 
         self,
 
@@ -257,15 +148,19 @@ class ReportCanvas:
 
         y,
 
-        radius,
+        w,
 
-        fill,
+        h,
 
-        outline=None
+        fill=theme.WHITE,
+
+        outline=theme.LIGHT_GRAY,
+
+        radius=20
 
     ):
 
-        self.draw.ellipse(
+        self.draw.rounded_rectangle(
 
             (
 
@@ -273,333 +168,160 @@ class ReportCanvas:
 
                 y,
 
-                x + radius * 2,
+                x+w,
 
-                y + radius * 2
+                y+h
 
             ),
+
+            radius=radius,
 
             fill=fill,
 
-            outline=outline
+            outline=outline,
+
+            width=2
 
         )
 
-    # =================================================
+    # ======================================
 
-    def text(
+    def image_box(
 
         self,
+
+        path,
 
         x,
 
         y,
 
-        value,
+        w,
 
-        font,
-
-        color=theme.BLACK,
-
-        anchor=None
+        h
 
     ):
 
-        self.draw.text(
+        img = Image.open(path).convert("RGB")
+
+        img.thumbnail(
 
             (
 
-                x,
+                w-20,
 
-                y
-
-            ),
-
-            str(value),
-
-            fill=color,
-
-            font=font,
-
-            anchor=anchor
-
-        )
-
-    # =================================================
-
-    def centered_text(
-
-        self,
-
-        x,
-
-        y,
-
-        width,
-
-        value,
-
-        font,
-
-        color=theme.BLACK
-
-    ):
-
-        bbox = self.draw.textbbox(
-
-            (
-
-                0,
-
-                0
-
-            ),
-
-            str(value),
-
-            font=font
-
-        )
-
-        text_width = bbox[2] - bbox[0]
-
-        xx = x + (width - text_width) // 2
-
-        self.text(
-
-            xx,
-
-            y,
-
-            value,
-
-            font,
-
-            color
-
-        )
-
-    # =================================================
-
-    def paste_image(
-
-        self,
-
-        image,
-
-        x,
-
-        y,
-
-        width,
-
-        height,
-
-        keep_ratio=True
-
-    ):
-
-        if isinstance(
-
-            image,
-
-            str
-
-        ):
-
-            image = Image.open(
-
-                image
-
-            ).convert(
-
-                "RGB"
+                h-20
 
             )
 
-        else:
+        )
 
-            image = image.copy()
+        ox = (
 
-        if keep_ratio:
+            w -
 
-            image.thumbnail(
-
-    (
-
-        width,
-
-        height
-
-    ),
-
-    Image.Resampling.LANCZOS
-
-)
-
-        else:
-
-          image = image.resize(
-
-    (
-
-        width,
-
-        height
-
-    ),
-
-    Image.Resampling.LANCZOS
-
-)  
-
-        offset_x = (
-
-            width -
-
-            image.width
+            img.width
 
         ) // 2
 
-        offset_y = (
+        oy = (
 
-            height -
+            h -
 
-            image.height
+            img.height
 
         ) // 2
 
-        self.image.paste(
-
-            image,
-
-            (
-
-                x + offset_x,
-
-                y + offset_y
-
-            )
-
-        )
-
-    # =================================================
-
-    def horizontal_progress(
-
-        self,
-
-        x,
-
-        y,
-
-        width,
-
-        height,
-
-        percentage,
-
-        background=(230,230,230),
-
-        foreground=theme.SECONDARY
-
-    ):
-
-        percentage = max(
-
-            0,
-
-            min(
-
-                100,
-
-                percentage
-
-            )
-
-        )
-
-        self.rounded_box(
+        self.box(
 
             x,
 
             y,
 
-            width,
+            w,
 
-            height,
-
-            fill=background,
-
-            outline=background,
-
-            radius=height//2,
-
-            border_width=0
+            h
 
         )
 
-        filled = int(
+        self.image.paste(
 
-            width *
+            img,
 
-            percentage /
+            (
 
-            100
+                x+ox,
+
+                y+oy
+
+            )
 
         )
 
-        if filled > 0:
+    # ======================================
 
-            self.rounded_box(
+    def progress(
+
+        self,
+
+        x,
+
+        y,
+
+        w,
+
+        value,
+
+        color
+
+    ):
+
+        self.draw.rounded_rectangle(
+
+            (
 
                 x,
 
                 y,
 
-                filled,
+                x+w,
 
-                height,
+                y+22
 
-                fill=foreground,
+            ),
 
-                outline=foreground,
+            radius=11,
 
-                radius=height//2,
+            fill=(235,235,235)
 
-                border_width=0
+        )
 
-            )
-# =================================================
+        filled = int(
 
-def save_preview(
+            w *
 
-    self,
+            value /
 
-    path
+            100
 
-):
+        )
 
-    preview = self.image.resize(
+        self.draw.rounded_rectangle(
 
-        (
+            (
 
-            self.image.width // 2,
+                x,
 
-            self.image.height // 2
+                y,
 
-        ),
+                x+filled,
 
-        Image.Resampling.LANCZOS
+                y+22
 
-    )
+            ),
 
-    preview.save(
+            radius=11,
 
-        path,
+            fill=color
 
-        format="PNG",
-
-        optimize=True
-
-    )
+        )
