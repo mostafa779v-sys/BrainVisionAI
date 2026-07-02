@@ -57,7 +57,17 @@ class ReportCanvas:
 
             )
 
-        self.image.save(path)
+        self.image.save(
+
+    path,
+
+    format="PNG",
+
+    optimize=True,
+
+    compress_level=0
+
+)
 
     # =================================================
 
@@ -415,29 +425,33 @@ class ReportCanvas:
 
             image.thumbnail(
 
-                (
+    (
 
-                    width,
+        width,
 
-                    height
+        height
 
-                )
+    ),
 
-            )
+    Image.Resampling.LANCZOS
+
+)
 
         else:
 
-            image = image.resize(
+          image = image.resize(
 
-                (
+    (
 
-                    width,
+        width,
 
-                    height
+        height
 
-                )
+    ),
 
-            )
+    Image.Resampling.LANCZOS
+
+)  
 
         offset_x = (
 
@@ -556,3 +570,36 @@ class ReportCanvas:
                 border_width=0
 
             )
+# =================================================
+
+def save_preview(
+
+    self,
+
+    path
+
+):
+
+    preview = self.image.resize(
+
+        (
+
+            self.image.width // 2,
+
+            self.image.height // 2
+
+        ),
+
+        Image.Resampling.LANCZOS
+
+    )
+
+    preview.save(
+
+        path,
+
+        format="PNG",
+
+        optimize=True
+
+    )
