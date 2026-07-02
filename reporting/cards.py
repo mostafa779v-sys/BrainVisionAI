@@ -1,359 +1,736 @@
-"""
-====================================================
-BrainVisionAI
-Cards Components
-====================================================
-"""
+# ==========================================
+# BrainVisionAI
+# reporting/cards.py
+# ==========================================
 
-from . import theme
-
-
-# =====================================================
-# Base Card
-# =====================================================
-
-class Card:
-
-    def __init__(
-
-        self,
-
-        canvas,
-
-        x,
-
-        y,
-
-        width,
-
-        height,
-
-        title
-
-    ):
-
-        self.canvas = canvas
-
-        self.x = x
-
-        self.y = y
-
-        self.width = width
-
-        self.height = height
-
-        self.title = title
-
-    # ============================================
-
-    def draw_background(self):
-
-        self.canvas.shadow_box(
-
-            self.x,
-
-            self.y,
-
-            self.width,
-
-            self.height
-
-        )
-
-        self.canvas.text(
-
-            self.x + 25,
-
-            self.y + 20,
-
-            self.title,
-
-            theme.HEADER_FONT,
-
-            theme.PRIMARY
-
-        )
+from PIL import ImageDraw, ImageFont
+import textwrap
 
 
-# =====================================================
+# ==========================================
+# Colors
+# ==========================================
+
+CARD_BACKGROUND = (255, 255, 255)
+
+CARD_BORDER = (220, 220, 220)
+
+TITLE_COLOR = (35, 55, 85)
+
+TEXT_COLOR = (45, 45, 45)
+
+GREEN = (34, 170, 90)
+
+YELLOW = (245, 180, 40)
+
+RED = (215, 60, 60)
+
+LIGHT_GRAY = (150, 150, 150)
+
+
+# ==========================================
+# Fonts
+# ==========================================
+
+try:
+
+    FONT_TITLE = ImageFont.truetype(
+        "DejaVuSans-Bold.ttf",
+        34
+    )
+
+    FONT_SUBTITLE = ImageFont.truetype(
+        "DejaVuSans-Bold.ttf",
+        24
+    )
+
+    FONT_TEXT = ImageFont.truetype(
+        "DejaVuSans.ttf",
+        22
+    )
+
+    FONT_SMALL = ImageFont.truetype(
+        "DejaVuSans.ttf",
+        18
+    )
+
+except:
+
+    FONT_TITLE = ImageFont.load_default()
+
+    FONT_SUBTITLE = ImageFont.load_default()
+
+    FONT_TEXT = ImageFont.load_default()
+
+    FONT_SMALL = ImageFont.load_default()
+
+
+# ==========================================
+# Helper Functions
+# ==========================================
+
+def draw_card(
+    draw,
+    x,
+    y,
+    w,
+    h
+):
+    """
+    Draw white rounded card.
+    """
+
+    draw.rounded_rectangle(
+
+        [x, y, x + w, y + h],
+
+        radius=25,
+
+        fill=CARD_BACKGROUND,
+
+        outline=CARD_BORDER,
+
+        width=3
+
+    )
+
+
+def risk_color(confidence):
+
+    if confidence >= 95:
+
+        return GREEN
+
+    elif confidence >= 70:
+
+        return YELLOW
+
+    else:
+
+        return RED
+
+
+def risk_text(confidence):
+
+    if confidence >= 95:
+
+        return "VERY HIGH"
+
+    elif confidence >= 70:
+
+        return "HIGH"
+
+    elif confidence >= 40:
+
+        return "MODERATE"
+
+    else:
+
+        return "LOW"
+
+
+def draw_multiline(
+
+    draw,
+
+    text,
+
+    x,
+
+    y,
+
+    width,
+
+    font,
+
+    fill,
+
+    line_spacing=8
+
+):
+
+    wrapped = textwrap.fill(
+
+        text,
+
+        width=width
+
+    )
+
+    draw.multiline_text(
+
+        (x, y),
+
+        wrapped,
+
+        fill=fill,
+
+        font=font,
+
+        spacing=line_spacing
+
+    )
+
+
+# ==========================================
 # Diagnosis Card
-# =====================================================
+# ==========================================
 
-class DiagnosisCard(Card):
+def draw_diagnosis_card(
 
-    def __init__(
+    draw,
 
-        self,
+    x,
 
-        canvas,
+    y,
 
-        diagnosis,
+    w,
 
-        confidence,
+    h,
 
-        x=50,
+    diagnosis,
 
-        y=880,
+    confidence
 
-        width=720,
+):
 
-        height=250
+    draw_card(
 
-    ):
-
-        super().__init__(
-
-            canvas,
-
-            x,
-
-            y,
-
-            width,
-
-            height,
-
-            "Diagnosis"
-
-        )
-
-        self.diagnosis = diagnosis
-
-        self.confidence = confidence
-
-    # ============================================
-
-    def _diagnosis_color(self):
-
-        diagnosis = self.diagnosis.lower()
-
-        if diagnosis == "notumor":
-
-            return theme.SUCCESS
-
-        return theme.DANGER
-
-    # ============================================
-
-    def draw(self):
-
-        self.draw_background()
-
-        self.canvas.text(
-
-            self.x + 30,
-
-            self.y + 85,
-
-            self.diagnosis.upper(),
-
-            theme.BIG_FONT,
-
-            self._diagnosis_color()
-
-        )
-
-        self.canvas.text(
-
-            self.x + 30,
-
-            self.y + 150,
-
-            "Model Confidence",
-
-            theme.TEXT_FONT,
-
-            theme.DARK_GRAY
-
-        )
-
-        self.canvas.text(
-
-            self.x + 320,
-
-            self.y + 145,
-
-            f"{self.confidence:.2f}%",
-
-            theme.PERCENT_FONT,
-
-            theme.PRIMARY
-        )
-
-        self.canvas.line(
-
-            self.x + 25,
-
-            self.y + 195,
-
-            self.x + self.width - 25,
-
-            self.y + 195
-
-        )
-
-        if self.confidence >= 95:
-
-            status = "Very High Confidence"
-
-            color = theme.SUCCESS
-
-        elif self.confidence >= 85:
-
-            status = "High Confidence"
-
-            color = theme.SECONDARY
-
-        elif self.confidence >= 70:
-
-            status = "Moderate Confidence"
-
-            color = theme.WARNING
-
-        else:
-
-            status = "Low Confidence"
-
-            color = theme.DANGER
-
-        self.canvas.text(
-
-            self.x + 30,
-
-            self.y + 210,
-
-            status,
-
-            theme.TEXT_FONT,
-
-            color
-
-        )
-
-
-# =====================================================
-# Confidence Card
-# =====================================================
-
-class ConfidenceCard(Card):
-
-    def __init__(
-
-        self,
-
-        canvas,
-
-        confidence,
+        draw,
 
         x,
 
         y,
 
-        width=250,
+        w,
 
-        height=170
+        h
 
-    ):
+    )
 
-        super().__init__(
+    padding = 35
 
-            canvas,
+    cx = x + padding
 
-            x,
+    cy = y + padding
 
-            y,
+    # -----------------------------
+    # Title
+    # -----------------------------
 
-            width,
+    draw.text(
 
-            height,
+        (cx, cy),
 
-            "Confidence"
+        "AI DIAGNOSIS",
 
-        )
+        font=FONT_TITLE,
 
-        self.confidence = confidence
+        fill=TITLE_COLOR
 
-    # ============================================
+    )
 
-    def draw(self):
+    cy += 60
 
-        self.draw_background()
+    # -----------------------------
+    # Diagnosis
+    # -----------------------------
 
-        self.canvas.text(
+    draw.text(
 
-            self.x + 45,
+        (cx, cy),
 
-            self.y + 70,
+        "Diagnosis",
 
-            f"{self.confidence:.2f}%",
+        font=FONT_SUBTITLE,
 
-            theme.BIG_FONT,
+        fill=LIGHT_GRAY
 
-            theme.PRIMARY
+    )
 
-        )
+    cy += 38
+
+    draw.text(
+
+        (cx, cy),
+
+        diagnosis.upper(),
+
+        font=FONT_TITLE,
+
+        fill=risk_color(confidence)
+
+    )
+
+    cy += 65
+
+    # -----------------------------
+    # Confidence
+    # -----------------------------
+
+    draw.text(
+
+        (cx, cy),
+
+        "Model Confidence",
+
+        font=FONT_SUBTITLE,
+
+        fill=LIGHT_GRAY
+
+    )
+
+    draw.text(
+
+        (x + w - 210, cy),
+
+        f"{confidence:.2f}%",
+
+        font=FONT_SUBTITLE,
+
+        fill=TITLE_COLOR
+
+    )
+
+    cy += 50
+        # -----------------------------
+    # Progress Bar
+    # -----------------------------
+
+    bar_x = cx
+
+    bar_y = cy
+
+    bar_w = w - (padding * 2)
+
+    bar_h = 26
+
+    draw.rounded_rectangle(
+
+        (
+
+            bar_x,
+            bar_y,
+            bar_x + bar_w,
+            bar_y + bar_h
+
+        ),
+
+        radius=13,
+
+        fill=(235,235,235)
+
+    )
+
+    filled = int(
+
+        bar_w *
+
+        confidence /
+
+        100
+
+    )
+
+    draw.rounded_rectangle(
+
+        (
+
+            bar_x,
+            bar_y,
+            bar_x + filled,
+            bar_y + bar_h
+
+        ),
+
+        radius=13,
+
+        fill=risk_color(confidence)
+
+    )
+
+    cy += 55
 
 
-# =====================================================
-# Information Card
-# =====================================================
+    # -----------------------------
+    # Risk Level
+    # -----------------------------
 
-class InfoCard(Card):
+    draw.text(
 
-    def __init__(
+        (cx, cy),
 
-        self,
+        "Prediction Reliability",
 
-        canvas,
+        font=FONT_SUBTITLE,
 
-        title,
+        fill=LIGHT_GRAY
 
-        value,
+    )
 
-        x,
+    draw.text(
 
-        y,
+        (
 
-        width=250,
+            x + w - 250,
 
-        height=170
+            cy
 
-    ):
+        ),
 
-        super().__init__(
+        risk_text(confidence),
 
-            canvas,
+        font=FONT_SUBTITLE,
 
-            x,
+        fill=risk_color(confidence)
 
-            y,
+    )
 
-            width,
+    cy += 60
 
-            height,
 
-            title
+    # -----------------------------
+    # Separator
+    # -----------------------------
 
-        )
+    draw.line(
 
-        self.value = value
+        (
 
-    # ============================================
+            cx,
 
-    def draw(self):
+            cy,
 
-        self.draw_background()
+            x + w - padding,
 
-        self.canvas.text(
+            cy
 
-            self.x + 30,
+        ),
 
-            self.y + 75,
+        fill=CARD_BORDER,
 
-            str(self.value),
+        width=2
 
-            theme.SECTION_FONT,
+    )
 
-            theme.BLACK
+    cy += 30
 
-        )
+    )
+
+    # -----------------------------
+    # AI Explanation
+    # -----------------------------
+
+    draw.text(
+
+        (cx, cy),
+
+        "AI Explanation",
+
+        font=FONT_SUBTITLE,
+
+        fill=TITLE_COLOR
+
+    )
+
+    cy += 40
+
+
+    explanation = (
+
+        "The neural network detected image "
+
+        "features that are highly consistent "
+
+        f"with {diagnosis}. "
+
+        "The highlighted Grad-CAM region "
+
+        "shows the area that contributed "
+
+        "most strongly to the final "
+
+        "prediction."
+
+    )
+
+    draw_multiline(
+
+        draw,
+
+        explanation,
+
+        cx,
+
+        cy,
+
+        width=42,
+
+        font=FONT_TEXT,
+
+        fill=TEXT_COLOR,
+
+        line_spacing=10
+
+    )
+
+    cy += 165
+
+
+    # -----------------------------
+    # Clinical Note
+    # -----------------------------
+
+    draw.text(
+
+        (cx, cy),
+
+        "Clinical Recommendation",
+
+        font=FONT_SUBTITLE,
+
+        fill=TITLE_COLOR
+
+    )
+
+    cy += 38
+
+
+    recommendation = (
+
+        "This AI result is intended to "
+
+        "assist clinical decision-making "
+
+        "and should always be interpreted "
+
+        "together with MRI findings and "
+
+        "radiologist assessment."
+
+    )
+
+    draw_multiline(
+
+        draw,
+
+        recommendation,
+
+        cx,
+
+        cy,
+
+        width=42,
+
+        font=FONT_SMALL,
+
+        fill=(90,90,90),
+
+        line_spacing=8
+
+    )
+        cy += 120
+
+    # -----------------------------
+    # AI Summary
+    # -----------------------------
+
+    draw.text(
+
+        (cx, cy),
+
+        "Summary",
+
+        font=FONT_SUBTITLE,
+
+        fill=TITLE_COLOR
+
+    )
+
+    cy += 42
+
+    summary = (
+
+        f"The AI model classified this MRI as "
+
+        f"{diagnosis.upper()} with a confidence "
+
+        f"of {confidence:.2f}%. "
+
+        "The highlighted Grad-CAM region "
+
+        "indicates where the neural network "
+
+        "focused most strongly during the "
+
+        "decision-making process."
+
+    )
+
+    draw_multiline(
+
+        draw,
+
+        summary,
+
+        cx,
+
+        cy,
+
+        width=42,
+
+        font=FONT_TEXT,
+
+        fill=TEXT_COLOR,
+
+        line_spacing=10
+
+    )
+
+    cy += 150
+
+    # -----------------------------
+    # Disclaimer
+    # -----------------------------
+
+    draw.line(
+
+        (
+
+            cx,
+
+            cy,
+
+            x + w - padding,
+
+            cy
+
+        ),
+
+        fill=CARD_BORDER,
+
+        width=2
+
+    )
+
+    cy += 25
+
+    draw.text(
+
+        (cx, cy),
+
+        "Disclaimer",
+
+        font=FONT_SUBTITLE,
+
+        fill=TITLE_COLOR
+
+    )
+
+    cy += 38
+
+    disclaimer = (
+
+        "BrainVisionAI is an AI-assisted "
+
+        "decision support system. "
+
+        "The generated diagnosis should "
+
+        "not replace professional medical "
+
+        "judgment or radiological reporting."
+
+    )
+
+    draw_multiline(
+
+        draw,
+
+        disclaimer,
+
+        cx,
+
+        cy,
+
+        width=42,
+
+        font=FONT_SMALL,
+
+        fill=(120,120,120),
+
+        line_spacing=8
+
+    )
+
+    cy += 105
+
+    # -----------------------------
+    # Report Status
+    # -----------------------------
+
+    draw.line(
+
+        (
+
+            cx,
+
+            cy,
+
+            x + w - padding,
+
+            cy
+
+        ),
+
+        fill=CARD_BORDER,
+
+        width=2
+
+    )
+
+    cy += 28
+
+    draw.text(
+
+        (cx, cy),
+
+        "Report Status",
+
+        font=FONT_SUBTITLE,
+
+        fill=TITLE_COLOR
+
+    )
+
+    draw.text(
+
+        (
+
+            x + w - 180,
+
+            cy
+
+        ),
+
+        "COMPLETED",
+
+        font=FONT_SUBTITLE,
+
+        fill=GREEN
+
+    )
+
+    cy += 45
+
+    draw.text(
+
+        (cx, cy),
+
+        "Generated automatically by BrainVisionAI.",
+
+        font=FONT_SMALL,
+
+        fill=LIGHT_GRAY
+
+    )
