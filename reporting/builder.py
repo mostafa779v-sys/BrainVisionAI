@@ -9,17 +9,9 @@ from .canvas import ReportCanvas
 
 from .header import Header
 from .footer import Footer
-
 from .images import MRISection
-
-from .cards import (
-    DiagnosisCard
-)
-
-from .charts import (
-    ProbabilityChart
-)
-
+from .cards import DiagnosisCard
+from .charts import ProbabilityChart
 from .metadata import MetadataSection
 
 
@@ -56,26 +48,24 @@ class ReportBuilder:
         self.canvas = ReportCanvas()
 
         self.original_image = original_image
-
         self.gradcam_image = gradcam_image
 
         self.diagnosis = diagnosis
-
         self.confidence = confidence
-
         self.probabilities = probabilities
 
         self.model_name = model_name
-
         self.version = version
-
         self.device = device
-
         self.image_size = image_size
 
     # =====================================================
 
     def build(self):
+
+        # ------------------------------------------
+        # Header
+        # ------------------------------------------
 
         Header(
 
@@ -84,6 +74,10 @@ class ReportBuilder:
             self.version
 
         ).draw()
+
+        # ------------------------------------------
+        # MRI Images
+        # ------------------------------------------
 
         MRISection(
 
@@ -95,6 +89,10 @@ class ReportBuilder:
 
         ).draw()
 
+        # ------------------------------------------
+        # Diagnosis Card
+        # ------------------------------------------
+
         DiagnosisCard(
 
             self.canvas,
@@ -105,6 +103,10 @@ class ReportBuilder:
 
         ).draw()
 
+        # ------------------------------------------
+        # Probability Chart
+        # ------------------------------------------
+
         ProbabilityChart(
 
             self.canvas,
@@ -112,6 +114,10 @@ class ReportBuilder:
             self.probabilities
 
         ).draw()
+
+        # ------------------------------------------
+        # Metadata
+        # ------------------------------------------
 
         MetadataSection(
 
@@ -126,6 +132,10 @@ class ReportBuilder:
             self.image_size
 
         ).draw()
+
+        # ------------------------------------------
+        # Footer
+        # ------------------------------------------
 
         Footer(
 
