@@ -1,8 +1,8 @@
 """
-====================================================
+=========================================
 BrainVisionAI
-Report Interface
-====================================================
+Report API
+=========================================
 """
 
 from .builder import ReportBuilder
@@ -24,48 +24,34 @@ def create_report(
 
     model_name="EfficientNet-B0",
 
-    version="v0.5",
+    version="v1.0",
 
-    device="cpu",
+    device="cuda",
 
     image_size=224
 
 ):
 
-    """
-    Generate BrainVisionAI Report.
-
-    Returns
-    -------
-    output_path
-    """
-
     builder = ReportBuilder(
 
-        original_image=original_image,
+        original_image,
 
-        gradcam_image=gradcam_image,
+        gradcam_image,
 
-        diagnosis=diagnosis,
+        diagnosis,
 
-        confidence=confidence,
+        confidence,
 
-        probabilities=probabilities,
+        probabilities,
 
-        model_name=model_name,
+        model_name,
 
-        version=version,
+        version,
 
-        device=device,
+        device,
 
-        image_size=image_size
-
-    )
-
-    builder.save(
-
-        output_path
+        image_size
 
     )
 
-    return output_path
+    return builder.save(output_path)
